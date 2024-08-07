@@ -1,101 +1,51 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const container = document.getElementById('rain-container');
-  const numberOfImages = 200; // Adjust this value to increase or decrease density
-  const colors = generateColors();
+document.addEventListener('DOMContentLoaded', () => {
+  const colors = [
+      '#225f6e', '#53a9ad', '#a1ad39', '#b1cc11', 
+      '#f2cb0a', '#efae0c', '#e8210c', '#51d0e5', 
+      '#1e7777', '#878c17', '#dae858', '#a3860d', 
+      '#c66709', '#ff0000', '#ffff00', '#ff0000', 
+      '#1818a0', '#f2dc0f', '#aa0e0e'
+  ];
+  const rainContainer = document.getElementById('rain-container');
 
-  for (let i = 0; i < numberOfImages; i++) {
-      const img = document.createElement('img');
-      img.src = `images/image${(i % 7) + 1}.svg`;
-      img.alt = `Image ${(i % 7) + 1}`;
-      img.className = 'rain-image';
-      container.appendChild(img);
-      resetImage(img, colors);
-      img.addEventListener('animationend', () => resetImage(img, colors));
+  function createRainDrop() {
+      const rainDrop = document.createElement('div');
+      rainDrop.classList.add('rain');
+      
+      // Set a random color
+      rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+      // Set random size
+      const size = Math.random() * 20 + 10; // size between 10px and 30px
+      rainDrop.style.width = `${size}px`;
+      rainDrop.style.height = `${size}px`;
+
+      // Set random left position
+      rainDrop.style.left = `${Math.random() * 100}%`;
+
+      // Set random duration
+      const duration = Math.random() * 3 + 3; // duration between 3s and 6s
+      rainDrop.style.animationDuration = `${duration}s`;
+
+      // Set random shape and border radius
+      if (Math.random() > 0.5) {
+          const borderRadius = Math.random() * 50; // random border-radius for different shapes
+          rainDrop.style.borderRadius = `${borderRadius}%`;
+      }
+
+      // Apply rotation to a few raindrops
+      if (Math.random() > 0.7) {
+          rainDrop.style.animation = `fall ${duration}s linear infinite, rotate ${Math.random() * 3 + 3}s linear infinite`;
+      }
+
+      rainContainer.appendChild(rainDrop);
+
+      // Remove the raindrop when the animation ends
+      rainDrop.addEventListener('animationend', () => {
+          rainContainer.removeChild(rainDrop);
+      });
   }
 
-  window.addEventListener('resize', () => {
-      const images = document.querySelectorAll('.rain-image');
-      images.forEach(img => resetImage(img, colors));
-  });
+  // Create raindrops continuously
+  setInterval(createRainDrop, 50); // Adjust the interval for more or fewer raindrops
 });
-
-function resetImage(img, colors) {
-  const containerWidth = window.innerWidth;
-  const containerHeight = window.innerHeight;
-  const minSize = containerWidth < 600 ? 20 : 40; // Minimum size based on viewport width
-  const maxSize = containerWidth < 600 ? 60 : 100; // Maximum size based on viewport width
-  const size = Math.random() * (maxSize - minSize) + minSize; // Random size between minSize and maxSize
-  const left = Math.random() * containerWidth; // Random horizontal position
-  const top = Math.random() * -containerHeight; // Random start position above the viewport
-  const baseDuration = Math.random() < 0.1 ? 2 : 5; // 10% chance to be faster
-  const durationVariance = Math.random() * 7; // Random variance between 0s and 7s (slower speed)
-  const duration = baseDuration + durationVariance; // Calculate final duration
-  const colorIndex = Math.floor(Math.random() * colors.length);
-  const baseColor = colors[colorIndex];
-  const primeVariance = getPrimeVariance(); // Use prime numbers for variance
-  const color = (baseColor + primeVariance) % 360; // Calculate final color
-
-  img.style.width = `${size}px`;
-  img.style.height = `${size}px`;
-  img.style.left = `${left}px`;
-  img.style.top = `${top}px`;
-  img.style.animationDuration = `${duration}s`;
-  img.style.animationName = 'none';
-  img.style.filter = `hue-rotate(${color}deg)`; // Apply color filter
-
-  // Trigger reflow to restart animation
-  img.offsetHeight;
-  img.style.animationName = 'fall';
-}
-
-function generateColors() {
-  // Base hue values for original 7 colors, primary, and secondary colors
-  const baseColors = [
-      0,   // Red
-      30,  // Orange
-      60,  // Yellow
-      90,  // Lime
-      120, // Green
-      150, // Aquamarine
-      180, // Cyan
-      210, // Azure
-      240, // Blue
-      270, // Violet
-      300, // Magenta
-      330  // Rose
-  ];
-
-  // Primary colors
-  const primaryColors = [
-      0,   // Red
-      60,  // Yellow
-      240  // Blue
-  ];
-
-  // Secondary colors
-  const secondaryColors = [
-      30,  // Orange
-      90,  // Lime
-      150, // Aquamarine
-      210, // Azure
-      270, // Violet
-      330  // Rose
-  ];
-
-  // Combine primary and secondary colors with an 80/20 distribution and randomness
-  const colors = [];
-  for (let i = 0; i < 80; i++) {
-      colors.push(primaryColors[i % primaryColors.length]);
-  }
-  const secondaryCount = Math.floor(Math.random() * 21); // Random number between 0 and 20
-  for (let i = 0; i < secondaryCount; i++) {
-      colors.push(secondaryColors[i % secondaryColors.length]);
-  }
-  return baseColors.concat(colors);
-}
-
-function getPrimeVariance() {
-  // Prime numbers for variance
-  const primes = [1, 2, 3, 5, 7, 11];
-  return primes[Math.floor(Math.random() * primes.length)];
-}
