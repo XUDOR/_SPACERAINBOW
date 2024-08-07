@@ -5,26 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rain Animation</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Inline CSS to enforce background color */
+        body, .rain-container {
+            background-color: #000 !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="rain-container" id="rain-container">
-        <!-- Duplicated images to increase density -->
-        <img src="images/image1.svg" alt="Image 1" class="rain-image">
-        <img src="images/image2.svg" alt="Image 2" class="rain-image">
-        <img src="images/image3.svg" alt="Image 3" class="rain-image">
-        <img src="images/image4.svg" alt="Image 4" class="rain-image">
-        <img src="images/image5.svg" alt="Image 5" class="rain-image">
-        <img src="images/image6.svg" alt="Image 6" class="rain-image">
-        <img src="images/image7.svg" alt="Image 7" class="rain-image">
-        <img src="images/image1.svg" alt="Image 1" class="rain-image">
-        <img src="images/image2.svg" alt="Image 2" class="rain-image">
-        <img src="images/image3.svg" alt="Image 3" class="rain-image">
-        <img src="images/image4.svg" alt="Image 4" class="rain-image">
-        <img src="images/image5.svg" alt="Image 5" class="rain-image">
-        <img src="images/image6.svg" alt="Image 6" class="rain-image">
-        <img src="images/image7.svg" alt="Image 7" class="rain-image">
-        <!-- Additional duplicates for more density -->
-    </div>
+    <div class="rain-container" id="rain-container"></div>
     <script src="script.js"></script>
 </body>
 </html>

@@ -3,10 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const numberOfImages = 200; // Adjust this value to increase or decrease density
   const colors = generateColors();
 
-  // Set initial background color to cream
-  document.body.style.backgroundColor = '#fcfcf5';
-  container.style.backgroundColor = '#fcfcf5';
-
   for (let i = 0; i < numberOfImages; i++) {
       const img = document.createElement('img');
       img.src = `images/image${(i % 7) + 1}.svg`;
@@ -21,12 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const images = document.querySelectorAll('.rain-image');
       images.forEach(img => resetImage(img, colors));
   });
-
-  // Ensure the background color changes to black when animation starts
-  setTimeout(() => {
-      document.body.style.backgroundColor = '#000';
-      container.style.backgroundColor = '#000';
-  }, 1000); // Adjust the delay as needed
 });
 
 function resetImage(img, colors) {
@@ -37,8 +27,8 @@ function resetImage(img, colors) {
   const size = Math.random() * (maxSize - minSize) + minSize; // Random size between minSize and maxSize
   const left = Math.random() * containerWidth; // Random horizontal position
   const top = Math.random() * -containerHeight; // Random start position above the viewport
-  const baseDuration = 1.5; // Base duration
-  const durationVariance = Math.random() * 3.5; // Random variance between 0s and 3.5s
+  const baseDuration = 3; // Base duration (slower speed)
+  const durationVariance = Math.random() * 5; // Random variance between 0s and 5s (slower speed)
   const duration = baseDuration + durationVariance; // Calculate final duration
   const colorIndex = Math.floor(Math.random() * colors.length);
   const baseColor = colors[colorIndex];
@@ -59,20 +49,19 @@ function resetImage(img, colors) {
 }
 
 function generateColors() {
-  // Base hue values for primary colors and additional colors
+  // Base hue values for original 7 colors, primary, and secondary colors
   const baseColors = [
       0,   // Red
-      60,  // Yellow
-      120, // Green
-      180, // Cyan
-      240, // Blue
-      300, // Magenta
-      360, // Red again
       30,  // Orange
+      60,  // Yellow
       90,  // Lime
+      120, // Green
       150, // Aquamarine
+      180, // Cyan
       210, // Azure
+      240, // Blue
       270, // Violet
+      300, // Magenta
       330  // Rose
   ];
   return baseColors;
@@ -80,6 +69,6 @@ function generateColors() {
 
 function getPrimeVariance() {
   // Prime numbers for variance
-  const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+  const primes = [1, 2, 3, 5, 7, 11];
   return primes[Math.floor(Math.random() * primes.length)];
 }
