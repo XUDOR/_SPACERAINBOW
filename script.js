@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let interval = 20;
   let increasing = true;
 
-  const rainInterval = setInterval(() => {
+  function adjustInterval() {
       createRainDrop();
 
       if (increasing) {
@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       clearInterval(rainInterval);
-      setInterval(() => createRainDrop(), interval);
-  }, interval);
+      rainInterval = setInterval(adjustInterval, interval);
+  }
+
+  let rainInterval = setInterval(adjustInterval, interval);
 });
