@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Set a random color
       rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-      // Set random size
-      const size = Math.random() * 20 + 10; // size between 10px and 30px
+      // Set random size and increasing scale
+      const size = Math.random() * 10 + 5; // size between 5px and 15px initially
       rainDrop.style.width = `${size}px`;
       rainDrop.style.height = `${size}px`;
 
@@ -24,13 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
       rainDrop.style.left = `${Math.random() * 100}%`;
 
       // Set random duration
-      const duration = Math.random() * 3 + 3; // duration between 3s and 6s
+      const duration = Math.random() * 3 + 2; // duration between 2s and 5s
       rainDrop.style.animationDuration = `${duration}s`;
 
       // Set random shape and border radius
       if (Math.random() > 0.5) {
-          const borderRadius = Math.random() * 50; // random border-radius for different shapes
-          rainDrop.style.borderRadius = `${borderRadius}%`;
+          rainDrop.style.borderRadius = '50%'; // make it a circle
       }
 
       // Apply rotation to a few raindrops
@@ -47,5 +46,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Create raindrops continuously
-  setInterval(createRainDrop, 50); // Adjust the interval for more or fewer raindrops
+  setInterval(createRainDrop, 60); // Adjust the interval for more or fewer raindrops
 });
