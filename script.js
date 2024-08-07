@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const stopButton = document.getElementById('stop-button');
     const downloadLogButton = document.getElementById('download-log');
     let portalCount = 0;
-    let triangleCreated = false;
     let rainInterval;
     let thinOutInterval;
     let cleanupInterval;
+    let portalEffectInterval;
     let log = [];
 
     function logMessage(message) {
@@ -65,27 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rainContainer.appendChild(rainDrop);
 
+        // Debugging output
+        console.log('Raindrop styles:', rainDrop.style.cssText);
+        console.log('Raindrop position:', rainDrop.getBoundingClientRect());
+
         rainDrop.addEventListener('animationend', () => {
+            logMessage('Removing raindrop');
             rainContainer.removeChild(rainDrop);
         });
-    }
 
-    function createTriangle() {
-        const triangle = document.createElement('div');
-        triangle.style.width = 0;
-        triangle.style.height = 0;
-        triangle.style.borderLeft = '50vw solid transparent';
-        triangle.style.borderRight = '50vw solid transparent';
-        triangle.style.borderBottom = '100vh solid white';
-        triangle.style.position = 'absolute';
-        triangle.style.left = `${Math.random() * 100}%`;
-        triangle.style.top = `${Math.random() * -10}%`;
-        triangle.style.animation = `fall ${Math.random() * 15 + 5}s linear infinite, scaleUp ${Math.random() * 15 + 5}s ease-in-out infinite`;
-        rainContainer.appendChild(triangle);
-
-        triangle.addEventListener('animationend', () => {
-            rainContainer.removeChild(triangle);
-        });
+        logMessage(`Raindrop appended to the DOM: ${rainDrop.outerHTML}`);
     }
 
     function startRain() {
@@ -107,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         raindrops.forEach(rainDrop => {
             if (rainDrop.getBoundingClientRect().top > window.innerHeight) {
                 rainDrop.remove();
+                logMessage('Raindrop cleaned up');
             }
         });
     }
@@ -146,11 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(portalInterval);
             clearInterval(colorScreenInterval);
             portalCount++;
-
-            if (portalCount >= 3 && !triangleCreated) {
-                createTriangle();
-                triangleCreated = true;
-            }
         }, 3000);
     }
 
@@ -163,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startAnimation() {
         audio.play();
-        startTriangle.style.display = 'none';
         startRain();
         thinOutRaindrops();
         cleanupInterval = setInterval(cleanupRaindrops, 3000);
@@ -189,7 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(link);
     }
 
-    startTriangle.addEventListener('click', startAnimation);
+    // Start the animation when the start triangle is clicked
+    startTriangle.addEventListener('click', () => {
+        startTriangle.style.display = 'none';
+        startAnimation();
+    });
+
     stopButton.addEventListener('click', stopAnimation);
     downloadLogButton.addEventListener('click', downloadLog);
 });
