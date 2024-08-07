@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const audio = document.getElementById('background-audio');
     const stopButton = document.getElementById('stop-button');
     const downloadLogButton = document.getElementById('download-log');
+    const downloadDomButton = document.getElementById('download-dom');
     let portalCount = 0;
     let rainInterval;
     let thinOutInterval;
@@ -43,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const borderRadius = Array.from({ length: 4 }, () => `${Math.random() * 50}%`).join(' ');
             rainDrop.style.borderRadius = borderRadius;
         } else {
-            // Apply geometric shapes
             rainDrop.style.clipPath = `polygon(${Array.from({ length: sides }, () => `${Math.random() * 100}% ${Math.random() * 100}%`).join(', ')})`;
         }
 
@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Debugging output
         console.log('Raindrop styles:', rainDrop.style.cssText);
+        console.log('Raindrop parent:', rainDrop.parentElement);
         console.log('Raindrop position:', rainDrop.getBoundingClientRect());
 
         rainDrop.addEventListener('animationend', () => {
@@ -172,6 +173,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(link);
     }
 
+    function downloadDomElements() {
+        const domElements = Array.from(rainContainer.children).map(child => {
+            return {
+                tagName: child.tagName,
+                className: child.className,
+                style: child.style.cssText,
+                rect: child.getBoundingClientRect()
+            };
+        });
+
+        const domBlob = new Blob([JSON.stringify(domElements, null, 2)], { type: 'application/json' });
+        const domUrl = URL.createObjectURL(domBlob);
+        const link = document.createElement('a');
+        link.href = domUrl;
+        link.download = 'dom-elements.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     // Start the animation when the start triangle is clicked
     startTriangle.addEventListener('click', () => {
         startTriangle.style.display = 'none';
@@ -180,4 +201,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     stopButton.addEventListener('click', stopAnimation);
     downloadLogButton.addEventListener('click', downloadLog);
+    downloadDomButton.addEventListener('click', downloadDomElements);
 });
