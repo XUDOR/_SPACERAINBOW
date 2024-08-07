@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let rainInterval;
     let thinOutInterval;
     let cleanupInterval;
-    let portalEffectInterval;
     let log = [];
 
     function logMessage(message) {
