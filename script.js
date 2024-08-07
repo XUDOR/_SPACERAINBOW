@@ -27,8 +27,8 @@ function resetImage(img, colors) {
   const size = Math.random() * (maxSize - minSize) + minSize; // Random size between minSize and maxSize
   const left = Math.random() * containerWidth; // Random horizontal position
   const top = Math.random() * -containerHeight; // Random start position above the viewport
-  const baseDuration = 3; // Base duration (slower speed)
-  const durationVariance = Math.random() * 5; // Random variance between 0s and 5s (slower speed)
+  const baseDuration = Math.random() < 0.1 ? 2 : 5; // 10% chance to be faster
+  const durationVariance = Math.random() * 7; // Random variance between 0s and 7s (slower speed)
   const duration = baseDuration + durationVariance; // Calculate final duration
   const colorIndex = Math.floor(Math.random() * colors.length);
   const baseColor = colors[colorIndex];
@@ -64,7 +64,34 @@ function generateColors() {
       300, // Magenta
       330  // Rose
   ];
-  return baseColors;
+
+  // Primary colors
+  const primaryColors = [
+      0,   // Red
+      60,  // Yellow
+      240  // Blue
+  ];
+
+  // Secondary colors
+  const secondaryColors = [
+      30,  // Orange
+      90,  // Lime
+      150, // Aquamarine
+      210, // Azure
+      270, // Violet
+      330  // Rose
+  ];
+
+  // Combine primary and secondary colors with an 80/20 distribution and randomness
+  const colors = [];
+  for (let i = 0; i < 80; i++) {
+      colors.push(primaryColors[i % primaryColors.length]);
+  }
+  const secondaryCount = Math.floor(Math.random() * 21); // Random number between 0 and 20
+  for (let i = 0; i < secondaryCount; i++) {
+      colors.push(secondaryColors[i % secondaryColors.length]);
+  }
+  return baseColors.concat(colors);
 }
 
 function getPrimeVariance() {
