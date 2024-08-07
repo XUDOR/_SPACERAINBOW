@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set random size and increasing scale
         let size = Math.random() * 10 + 5; // size between 5px and 15px initially
         if (isSpecial) {
-            size *= 0.5; // Start smaller
+            size *= 0.3; // Start smaller
         }
         rainDrop.style.width = `${size}px`;
         rainDrop.style.height = `${size}px`;
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set random duration, ensuring some are slow
         let duration = Math.random() * 4 + 1; // duration between 1s and 5s
         if (isSpecial) {
-            duration *= 10; // Make the special raindrop fall much slower
+            duration *= 15; // Make the special raindrop fall much slower
         }
         rainDrop.style.animationDuration = `${duration}s`;
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let interval = 10;
+    let interval = 1;
     let increasing = true;
 
     function adjustInterval() {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (increasing) {
             interval++;
-            if (interval >= 30) {
+            if (interval >= 20) {
                 increasing = false;
             }
         } else {
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let thinOutInterval = setInterval(thinOutRaindrops, 5000); // Adjust the thinning rate as needed
+    let thinOutInterval = setInterval(thinOutRaindrops, 2000); // Adjust the thinning rate as needed
 
     // Function to periodically clean up old raindrops
     function cleanupRaindrops() {
@@ -130,11 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
         colorScreen.style.height = '100%';
         colorScreen.style.backgroundColor = color;
         colorScreen.style.opacity = 0;
-        colorScreen.style.transition = 'opacity 0.3s';
+        colorScreen.style.transition = 'opacity 0.2s';
         document.body.appendChild(colorScreen);
 
         requestAnimationFrame(() => {
-            colorScreen.style.opacity = 1;
+            colorScreen.style.opacity = .9;
         });
 
         setTimeout(() => {
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to start the portal effect
     function startPortalEffect() {
-        let portalInterval = setInterval(flashBackgroundColor, 50); // Change background color every 50 milliseconds
+        let portalInterval = setInterval(flashBackgroundColor, 20); // Change background color every 20 milliseconds
         let colorScreenInterval = setInterval(flashColorScreen, Math.random() * (1000 - 500) + 500); // Add color screens randomly between 0.5s to 1s
         setTimeout(() => {
             clearInterval(portalInterval);

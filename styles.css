@@ -46,6 +46,6 @@ body {
       transform: scale(0.5);
   }
   100% {
-      transform: scale(10);
+      transform: scale(15);
   }
 }
