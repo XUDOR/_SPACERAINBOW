@@ -48,19 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         rainDrop.style.left = `${Math.random() * 100}%`;
-        let duration = Math.random() * 4 + 1;
+        let duration = Math.random() * 3 + 2; // Changed from (4 + 1) to (3 + 2) for slightly faster fall
         if (isSpecial) {
-            duration *= 15;
+            duration *= 10; // Changed from 15 to 10 for faster special drops
         }
-        rainDrop.style.animationDuration = `${duration}s`;
-        rainDrop.style.opacity = Math.random() * 0.7 + 0.3;
 
         const rotationClass = `rotate-speed-${Math.floor(Math.random() * 4) + 1}`;
         rainDrop.classList.add(rotationClass);
 
-        if (isSpecial) {
-            rainDrop.style.animation = `fall ${duration}s linear infinite, scaleUp ${duration}s ease-in-out infinite`;
-        }
+        // Update animation styles
+        rainDrop.style.animation = isSpecial
+            ? `fall ${duration}s linear, scaleUp ${duration}s ease-in-out, ${rotationClass} ${duration}s linear`
+            : `fall ${duration}s linear, ${rotationClass} ${duration}s linear`;
+
+        rainDrop.style.opacity = Math.random() * 0.7 + 0.3;
 
         rainContainer.appendChild(rainDrop);
 
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rainDrop.addEventListener('animationend', () => {
             logMessage('Removing raindrop');
-            rainContainer.removeChild(rainDrop);
+            rainDrop.remove();
         });
 
         logMessage(`Raindrop appended to the DOM: ${rainDrop.outerHTML}`);
@@ -79,22 +80,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startRain() {
         logMessage('Starting rain');
-        rainInterval = setInterval(createRainDrop, 100);
+        rainInterval = setInterval(createRainDrop, 50); // Changed from 100 to 50 ms for denser rain
     }
 
     function thinOutRaindrops() {
         thinOutInterval = setInterval(() => {
             logMessage('Thinning out raindrops');
             clearInterval(rainInterval);
-            rainInterval = setInterval(createRainDrop, 500);
-        }, 5000);
+            rainInterval = setInterval(createRainDrop, 100); // Changed from 500 to 100 ms for denser rain even after thinning
+        }, 10000); // Changed from 5000 to 10000 ms to maintain density for longer
     }
 
     function cleanupRaindrops() {
         logMessage('Cleaning up raindrops');
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(rainDrop => {
-            if (rainDrop.getBoundingClientRect().top > window.innerHeight) {
+            if (rainDrop.getBoundingClientRect().top > window.innerHeight + 100) { // Added 100px buffer
                 rainDrop.remove();
                 logMessage('Raindrop cleaned up');
             }
@@ -109,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function flashColorScreen() {
         const color = colors[Math.floor(Math.random() * colors.length)];
         const colorScreen = document.createElement('div');
-        colorScreen.style.position = 'absolute';
+        colorScreen.style.position = 'fixed';
         colorScreen.style.top = 0;
         colorScreen.style.left = 0;
         colorScreen.style.width = '100%';
@@ -117,10 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         colorScreen.style.backgroundColor = color;
         colorScreen.style.opacity = 0;
         colorScreen.style.transition = 'opacity 0.2s';
+        colorScreen.style.pointerEvents = 'none';
         document.body.appendChild(colorScreen);
 
         requestAnimationFrame(() => {
-            colorScreen.style.opacity = .9;
+            colorScreen.style.opacity = '0.9';
         });
 
         setTimeout(() => {
@@ -156,9 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function stopAnimation() {
         audio.pause();
+        audio.currentTime = 0;
         clearInterval(rainInterval);
         clearInterval(thinOutInterval);
         clearInterval(cleanupInterval);
+        const raindrops = document.querySelectorAll('.rain');
+        raindrops.forEach(raindrop => raindrop.remove());
+        document.body.style.backgroundColor = '';
         logMessage('Animation stopped');
     }
 
