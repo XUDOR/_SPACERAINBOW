@@ -1,17 +1,85 @@
-// Custom JavaScript for the slider
-const slides = document.querySelectorAll('.slide');
-let currentSlide = 0;
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.getElementById('rain-container');
+  const numberOfImages = 200; // Adjust this value to increase or decrease density
+  const colors = generateColors();
 
-function showSlide(index) {
-  slides.forEach(slide => slide.classList.remove('active'));
-  slides[index].classList.add('active');
-  console.log(`Showing slide ${index}`);
+  // Set initial background color to cream
+  document.body.style.backgroundColor = '#fcfcf5';
+  container.style.backgroundColor = '#fcfcf5';
+
+  for (let i = 0; i < numberOfImages; i++) {
+      const img = document.createElement('img');
+      img.src = `images/image${(i % 7) + 1}.svg`;
+      img.alt = `Image ${(i % 7) + 1}`;
+      img.className = 'rain-image';
+      container.appendChild(img);
+      resetImage(img, colors);
+      img.addEventListener('animationend', () => resetImage(img, colors));
+  }
+
+  window.addEventListener('resize', () => {
+      const images = document.querySelectorAll('.rain-image');
+      images.forEach(img => resetImage(img, colors));
+  });
+
+  // Ensure the background color changes to black when animation starts
+  setTimeout(() => {
+      document.body.style.backgroundColor = '#000';
+      container.style.backgroundColor = '#000';
+  }, 1000); // Adjust the delay as needed
+});
+
+function resetImage(img, colors) {
+  const containerWidth = window.innerWidth;
+  const containerHeight = window.innerHeight;
+  const minSize = containerWidth < 600 ? 20 : 40; // Minimum size based on viewport width
+  const maxSize = containerWidth < 600 ? 60 : 100; // Maximum size based on viewport width
+  const size = Math.random() * (maxSize - minSize) + minSize; // Random size between minSize and maxSize
+  const left = Math.random() * containerWidth; // Random horizontal position
+  const top = Math.random() * -containerHeight; // Random start position above the viewport
+  const baseDuration = 1.5; // Base duration
+  const durationVariance = Math.random() * 3.5; // Random variance between 0s and 3.5s
+  const duration = baseDuration + durationVariance; // Calculate final duration
+  const colorIndex = Math.floor(Math.random() * colors.length);
+  const baseColor = colors[colorIndex];
+  const primeVariance = getPrimeVariance(); // Use prime numbers for variance
+  const color = (baseColor + primeVariance) % 360; // Calculate final color
+
+  img.style.width = `${size}px`;
+  img.style.height = `${size}px`;
+  img.style.left = `${left}px`;
+  img.style.top = `${top}px`;
+  img.style.animationDuration = `${duration}s`;
+  img.style.animationName = 'none';
+  img.style.filter = `hue-rotate(${color}deg)`; // Apply color filter
+
+  // Trigger reflow to restart animation
+  img.offsetHeight;
+  img.style.animationName = 'fall';
 }
 
-function nextSlide() {
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
+function generateColors() {
+  // Base hue values for primary colors and additional colors
+  const baseColors = [
+      0,   // Red
+      60,  // Yellow
+      120, // Green
+      180, // Cyan
+      240, // Blue
+      300, // Magenta
+      360, // Red again
+      30,  // Orange
+      90,  // Lime
+      150, // Aquamarine
+      210, // Azure
+      270, // Violet
+      330  // Rose
+  ];
+  return baseColors;
 }
 
-setInterval(nextSlide, 5000); // Change slide every 5 seconds
-showSlide(currentSlide);
+function getPrimeVariance() {
+  // Prime numbers for variance
+  const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+  return primes[Math.floor(Math.random() * primes.length)];
+}
