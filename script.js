@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const colors = [
-        '#225f6e', '#53a9ad', '#a1ad39', '#b1cc11',
-        '#f2cb0a', '#efae0c', '#e8210c', '#51d0e5',
-        '#1e7777', '#878c17', '#dae858', '#a3860d',
-        '#c66709', '#ff0000', '#ffff00', '#ff0000',
+        '#225f6e', '#53a9ad', '#a1ad39', '#b1cc11', 
+        '#f2cb0a', '#efae0c', '#e8210c', '#51d0e5', 
+        '#1e7777', '#878c17', '#dae858', '#a3860d', 
+        '#c66709', '#ff0000', '#ffff00', '#ff0000', 
         '#1818a0', '#f2dc0f', '#aa0e0e'
     ];
     const rainContainer = document.getElementById('rain-container');
