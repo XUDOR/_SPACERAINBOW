@@ -45,6 +45,26 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Create raindrops continuously
-  setInterval(createRainDrop, 60); // Adjust the interval for more or fewer raindrops
+  let interval = 20;
+  let increasing = true;
+
+  function createRainDropsContinuously() {
+      createRainDrop();
+
+      if (increasing) {
+          interval++;
+          if (interval >= 60) {
+              increasing = false;
+          }
+      } else {
+          interval--;
+          if (interval <= 15) {
+              increasing = true;
+          }
+      }
+
+      setTimeout(createRainDropsContinuously, interval);
+  }
+
+  createRainDropsContinuously();
 });
