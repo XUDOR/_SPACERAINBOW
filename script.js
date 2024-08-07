@@ -7,16 +7,36 @@ document.addEventListener('DOMContentLoaded', () => {
         '#1818a0', '#f2dc0f', '#aa0e0e'
     ];
     const rainContainer = document.getElementById('rain-container');
-    const audio = new Audio('/sound/spacerainbow-start.mp3');
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     let portalCount = 0;
     let triangleCreated = false;
+
+    // Load audio
+    let audioBuffer;
+    fetch('/sound/spacerainbow-start.mp3')
+        .then(response => response.arrayBuffer())
+        .then(data => audioContext.decodeAudioData(data))
+        .then(buffer => {
+            audioBuffer = buffer;
+            playAudio(); // Play the audio as soon as it is loaded
+        })
+        .catch(error => console.error('Error loading audio:', error));
+
+    function playAudio() {
+        if (audioBuffer) {
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+        }
+    }
 
     function createRainDrop() {
         const rainDrop = document.createElement('div');
         rainDrop.classList.add('rain');
 
         const isSpecial = Math.random() < 0.01;
-        const sides = Math.floor(Math.random() * 10) + 3; // 3 to 12 sides
+        const sides = Math.floor(Math.random() * 7) + 3; // 3 to 9 sides
 
         rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
@@ -31,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const borderRadius = Array.from({ length: 4 }, () => `${Math.random() * 50}%`).join(' ');
             rainDrop.style.borderRadius = borderRadius;
         } else {
-            // Apply Bezier curve shapes
+            // Apply geometric shapes
             rainDrop.style.clipPath = `polygon(${Array.from({ length: sides }, () => `${Math.random() * 100}% ${Math.random() * 100}%`).join(', ')})`;
         }
 
@@ -43,9 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
         rainDrop.style.animationDuration = `${duration}s`;
         rainDrop.style.opacity = Math.random() * 0.7 + 0.3;
 
-        if (Math.random() > 0.7) {
-            rainDrop.style.animation = `fall ${duration}s linear infinite, rotate ${Math.random() * 2 + 2}s linear infinite`;
-        }
+        const rotationClass = `rotate-speed-${Math.floor(Math.random() * 4) + 1}`;
+        rainDrop.classList.add(rotationClass);
 
         if (isSpecial) {
             rainDrop.style.animation = `fall ${duration}s linear infinite, scaleUp ${duration}s ease-in-out infinite`;
@@ -166,12 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 startPortalEffect();
             }
             if (barsElapsed % 72 === 0) {
-                audio.play();
+                playAudio();
             }
         }, barInterval);
     }
 
-    audio.play(); // Play the audio at the start
+    // Play audio and start effects immediately after loading
+    playAudio();
     schedulePortalEffect();
     startRain();
 

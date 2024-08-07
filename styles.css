@@ -49,3 +49,39 @@ body {
       transform: scale(15);
   }
 }
+
+@keyframes rotate-speed-1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-2 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-3 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-4 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rotate-speed-1 {
+  animation: rotate-speed-1 20s linear infinite;
+}
+
+.rotate-speed-2 {
+  animation: rotate-speed-2 40s linear infinite;
+}
+
+.rotate-speed-3 {
+  animation: rotate-speed-3 60s linear infinite;
+}
+
+.rotate-speed-4 {
+  animation: rotate-speed-4 80s linear infinite;
+}
