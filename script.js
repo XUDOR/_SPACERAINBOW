@@ -7,29 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
         '#1818a0', '#f2dc0f', '#aa0e0e'
     ];
     const rainContainer = document.getElementById('rain-container');
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const startTriangle = document.getElementById('start-triangle');
+    const audio = document.getElementById('background-audio');
     let portalCount = 0;
     let triangleCreated = false;
-
-    // Load audio
-    let audioBuffer;
-    fetch('/sound/spacerainbow-start.mp3')
-        .then(response => response.arrayBuffer())
-        .then(data => audioContext.decodeAudioData(data))
-        .then(buffer => {
-            audioBuffer = buffer;
-            playAudio(); // Play the audio as soon as it is loaded
-        })
-        .catch(error => console.error('Error loading audio:', error));
-
-    function playAudio() {
-        if (audioBuffer) {
-            const source = audioContext.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(audioContext.destination);
-            source.start(0);
-        }
-    }
 
     function createRainDrop() {
         const rainDrop = document.createElement('div');
@@ -184,16 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (barsElapsed % 33 === 0) {
                 startPortalEffect();
             }
-            if (barsElapsed % 72 === 0) {
-                playAudio();
-            }
         }, barInterval);
     }
 
-    // Play audio and start effects immediately after loading
-    playAudio();
-    schedulePortalEffect();
-    startRain();
+    startTriangle.addEventListener('click', () => {
+        audio.play();
+        startTriangle.style.display = 'none';
+        schedulePortalEffect();
+        startRain();
+    });
 
     setTimeout(() => {
         location.reload();
