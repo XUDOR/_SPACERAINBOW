@@ -1,18 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
     const colors = [
-        '#225f6e', '#53a9ad', '#a1ad39', '#b1cc11', 
-        '#f2cb0a', '#efae0c', '#e8210c', '#51d0e5', 
-        '#1e7777', '#878c17', '#dae858', '#a3860d', 
-        '#c66709', '#ff0000', '#ffff00', '#ff0000', 
+        '#225f6e', '#53a9ad', '#a1ad39', '#b1cc11',
+        '#f2cb0a', '#efae0c', '#e8210c', '#51d0e5',
+        '#1e7777', '#878c17', '#dae858', '#a3860d',
+        '#c66709', '#ff0000', '#ffff00', '#ff0000',
         '#1818a0', '#f2dc0f', '#aa0e0e'
     ];
     const rainContainer = document.getElementById('rain-container');
     const startTriangle = document.getElementById('start-triangle');
     const audio = document.getElementById('background-audio');
+    const stopButton = document.getElementById('stop-button');
+    const downloadLogButton = document.getElementById('download-log');
     let portalCount = 0;
     let triangleCreated = false;
+    let rainInterval;
+    let thinOutInterval;
+    let cleanupInterval;
+    let log = [];
+
+    function logMessage(message) {
+        log.push({ timestamp: Date.now(), message });
+        console.log(message);
+    }
 
     function createRainDrop() {
+        logMessage('Creating raindrop');
         const rainDrop = document.createElement('div');
         rainDrop.classList.add('rain');
 
@@ -76,33 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let interval = 50; // Higher initial interval to reduce density
-    let rainInterval;
-
-    function adjustInterval() {
-        createRainDrop();
-
-        clearInterval(rainInterval);
-        rainInterval = setInterval(adjustInterval, interval);
-    }
-
     function startRain() {
-        rainInterval = setInterval(adjustInterval, interval);
+        logMessage('Starting rain');
+        rainInterval = setInterval(createRainDrop, 100);
     }
 
     function thinOutRaindrops() {
-        interval += 10; // Increase the interval more rapidly
-        if (interval > 200) {
-            clearInterval(thinOutInterval);
-        } else {
+        thinOutInterval = setInterval(() => {
+            logMessage('Thinning out raindrops');
             clearInterval(rainInterval);
-            rainInterval = setInterval(adjustInterval, interval);
-        }
+            rainInterval = setInterval(createRainDrop, 500);
+        }, 5000);
     }
 
-    let thinOutInterval = setInterval(thinOutRaindrops, 2000);
-
     function cleanupRaindrops() {
+        logMessage('Cleaning up raindrops');
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(rainDrop => {
             if (rainDrop.getBoundingClientRect().top > window.innerHeight) {
@@ -110,8 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    let cleanupInterval = setInterval(cleanupRaindrops, 3000);
 
     function flashBackgroundColor() {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -141,12 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startPortalEffect() {
+        logMessage('Starting portal effect');
         let portalInterval = setInterval(flashBackgroundColor, 20);
         let colorScreenInterval = setInterval(flashColorScreen, Math.random() * (1000 - 500) + 500);
         setTimeout(() => {
             clearInterval(portalInterval);
             clearInterval(colorScreenInterval);
-            interval = 50;
             portalCount++;
 
             if (portalCount >= 3 && !triangleCreated) {
@@ -157,25 +155,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function schedulePortalEffect() {
-        let barsElapsed = 0;
-        const barInterval = (60 / 143) * 1000 * 4; // Calculate duration of one bar at 143 BPM
-
-        setInterval(() => {
-            barsElapsed++;
-            if (barsElapsed % 33 === 0) {
-                startPortalEffect();
-            }
-        }, barInterval);
+        logMessage('Scheduling portal effect');
+        setTimeout(startPortalEffect, 10000); // First portal effect after 10 seconds
+        setTimeout(startPortalEffect, 20000); // Second portal effect after 20 seconds
+        setTimeout(startPortalEffect, 30000); // Third portal effect after 30 seconds
     }
 
-    startTriangle.addEventListener('click', () => {
+    function startAnimation() {
         audio.play();
         startTriangle.style.display = 'none';
-        schedulePortalEffect();
         startRain();
-    });
+        thinOutRaindrops();
+        cleanupInterval = setInterval(cleanupRaindrops, 3000);
+        schedulePortalEffect();
+    }
 
-    setTimeout(() => {
-        location.reload();
-    }, (60 / 143) * 1000 * 4 * 72); // Reload after 72 bars
+    function stopAnimation() {
+        audio.pause();
+        clearInterval(rainInterval);
+        clearInterval(thinOutInterval);
+        clearInterval(cleanupInterval);
+        logMessage('Animation stopped');
+    }
+
+    function downloadLog() {
+        const logBlob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
+        const logUrl = URL.createObjectURL(logBlob);
+        const link = document.createElement('a');
+        link.href = logUrl;
+        link.download = 'console-log.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    startTriangle.addEventListener('click', startAnimation);
+    stopButton.addEventListener('click', stopAnimation);
+    downloadLogButton.addEventListener('click', downloadLog);
 });

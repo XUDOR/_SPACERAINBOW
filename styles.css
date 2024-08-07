@@ -12,20 +12,6 @@ body {
   overflow: hidden;
 }
 
-.start-triangle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-left: 50px solid transparent;
-  border-right: 50px solid transparent;
-  border-bottom: 100px solid white;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 10;
-}
-
 .rain {
   position: absolute;
   top: -100px;
@@ -80,4 +66,43 @@ body {
 
 .rotate-speed-4 {
   animation: rotate-speed-4 80s linear infinite;
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: gray;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+#stop-button, #download-log {
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+#stop-button {
+  background-color: aqua;
+}
+
+#download-log {
+  background-color: purple;
+  color: white;
+}
+
+.start-triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 100px solid white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
 }

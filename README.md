@@ -1,5 +1,5 @@
 # _ANIMATIONS
--->> spaveRainbow V.5
+-->> spaceRainbow V5d
 Repo of HTML / CSS / JAVASCRIPT assets
 V2: rainbow rain ainimation
 
