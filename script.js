@@ -7,90 +7,92 @@ document.addEventListener('DOMContentLoaded', () => {
         '#1818a0', '#f2dc0f', '#aa0e0e'
     ];
     const rainContainer = document.getElementById('rain-container');
-    let colorIndex = 0;
+    const audio = new Audio('/sound/spacerainbow-start.mp3');
+    let portalCount = 0;
+    let triangleCreated = false;
 
     function createRainDrop() {
         const rainDrop = document.createElement('div');
         rainDrop.classList.add('rain');
 
-        // Set a random color
+        const isSpecial = Math.random() < 0.01;
+        const sides = Math.floor(Math.random() * 10) + 3; // 3 to 12 sides
+
         rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-        // Determine if this raindrop should be the special slow and large one
-        const isSpecial = Math.random() < 0.01;
-
-        // Set random size and increasing scale
-        let size = Math.random() * 10 + 5; // size between 5px and 15px initially
+        let size = Math.random() * 10 + 5;
         if (isSpecial) {
-            size *= 0.3; // Start smaller
+            size *= 0.3;
         }
         rainDrop.style.width = `${size}px`;
         rainDrop.style.height = `${size}px`;
 
-        // Set random left position
-        rainDrop.style.left = `${Math.random() * 100}%`;
+        if (Math.random() > 0.5) {
+            const borderRadius = Array.from({ length: 4 }, () => `${Math.random() * 50}%`).join(' ');
+            rainDrop.style.borderRadius = borderRadius;
+        } else {
+            // Apply Bezier curve shapes
+            rainDrop.style.clipPath = `polygon(${Array.from({ length: sides }, () => `${Math.random() * 100}% ${Math.random() * 100}%`).join(', ')})`;
+        }
 
-        // Set random duration, ensuring some are slow
-        let duration = Math.random() * 4 + 1; // duration between 1s and 5s
+        rainDrop.style.left = `${Math.random() * 100}%`;
+        let duration = Math.random() * 4 + 1;
         if (isSpecial) {
-            duration *= 15; // Make the special raindrop fall much slower
+            duration *= 15;
         }
         rainDrop.style.animationDuration = `${duration}s`;
+        rainDrop.style.opacity = Math.random() * 0.7 + 0.3;
 
-        // Set random opacity
-        rainDrop.style.opacity = Math.random() * 0.7 + 0.3; // opacity between 0.3 and 1
-
-        // Set random shape and border radius
-        if (Math.random() > 0.5) {
-            rainDrop.style.borderRadius = '50%'; // make it a circle
-        }
-
-        // Apply rotation to a few raindrops
         if (Math.random() > 0.7) {
             rainDrop.style.animation = `fall ${duration}s linear infinite, rotate ${Math.random() * 2 + 2}s linear infinite`;
         }
 
-        // Apply special scale-up for the special raindrop
         if (isSpecial) {
             rainDrop.style.animation = `fall ${duration}s linear infinite, scaleUp ${duration}s ease-in-out infinite`;
         }
 
         rainContainer.appendChild(rainDrop);
 
-        // Remove the raindrop when the animation ends
         rainDrop.addEventListener('animationend', () => {
             rainContainer.removeChild(rainDrop);
         });
     }
 
-    let interval = 1;
-    let increasing = true;
+    function createTriangle() {
+        const triangle = document.createElement('div');
+        triangle.style.width = 0;
+        triangle.style.height = 0;
+        triangle.style.borderLeft = '50vw solid transparent';
+        triangle.style.borderRight = '50vw solid transparent';
+        triangle.style.borderBottom = '100vh solid white';
+        triangle.style.position = 'absolute';
+        triangle.style.left = `${Math.random() * 100}%`;
+        triangle.style.top = `${Math.random() * -10}%`;
+        triangle.style.animation = `fall ${Math.random() * 15 + 5}s linear infinite, scaleUp ${Math.random() * 15 + 5}s ease-in-out infinite`;
+        rainContainer.appendChild(triangle);
+
+        triangle.addEventListener('animationend', () => {
+            rainContainer.removeChild(triangle);
+        });
+    }
+
+    let interval = 50; // Higher initial interval to reduce density
+    let rainInterval;
 
     function adjustInterval() {
         createRainDrop();
-
-        if (increasing) {
-            interval++;
-            if (interval >= 20) {
-                increasing = false;
-            }
-        } else {
-            interval--;
-            if (interval <= 1) {
-                increasing = true;
-            }
-        }
 
         clearInterval(rainInterval);
         rainInterval = setInterval(adjustInterval, interval);
     }
 
-    let rainInterval = setInterval(adjustInterval, interval);
+    function startRain() {
+        rainInterval = setInterval(adjustInterval, interval);
+    }
 
-    // Function to gradually increase the interval to thin out raindrops
     function thinOutRaindrops() {
-        interval += 2; // Increase the interval more rapidly
-        if (interval > 200) { // Adjust the upper limit as needed
+        interval += 10; // Increase the interval more rapidly
+        if (interval > 200) {
             clearInterval(thinOutInterval);
         } else {
             clearInterval(rainInterval);
@@ -98,28 +100,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let thinOutInterval = setInterval(thinOutRaindrops, 2000); // Adjust the thinning rate as needed
+    let thinOutInterval = setInterval(thinOutRaindrops, 2000);
 
-    // Function to periodically clean up old raindrops
     function cleanupRaindrops() {
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(rainDrop => {
-            // Remove raindrop if it has moved out of the visible area
             if (rainDrop.getBoundingClientRect().top > window.innerHeight) {
                 rainDrop.remove();
             }
         });
     }
 
-    let cleanupInterval = setInterval(cleanupRaindrops, 3000); // Adjust the cleanup rate as needed
+    let cleanupInterval = setInterval(cleanupRaindrops, 3000);
 
-    // Function to change the background color rapidly
     function flashBackgroundColor() {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         document.body.style.backgroundColor = randomColor;
     }
 
-    // Function to add a quick screen with fade-in effect for random colors
     function flashColorScreen() {
         const color = colors[Math.floor(Math.random() * colors.length)];
         const colorScreen = document.createElement('div');
@@ -139,33 +137,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             colorScreen.remove();
-        }, 300); // Remove the color screen after 0.3 seconds
+        }, 300);
     }
 
-    // Function to start the portal effect
     function startPortalEffect() {
-        let portalInterval = setInterval(flashBackgroundColor, 20); // Change background color every 20 milliseconds
-        let colorScreenInterval = setInterval(flashColorScreen, Math.random() * (1000 - 500) + 500); // Add color screens randomly between 0.5s to 1s
+        let portalInterval = setInterval(flashBackgroundColor, 20);
+        let colorScreenInterval = setInterval(flashColorScreen, Math.random() * (1000 - 500) + 500);
         setTimeout(() => {
             clearInterval(portalInterval);
             clearInterval(colorScreenInterval);
-        }, 3000); // Stop the portal effect after 3 seconds
+            interval = 50;
+            portalCount++;
+
+            if (portalCount >= 3 && !triangleCreated) {
+                createTriangle();
+                triangleCreated = true;
+            }
+        }, 3000);
     }
 
-    // Schedule the portal effect to happen intermittently
     function schedulePortalEffect() {
-        let randomTime = Math.random() * (30000 - 10000) + 10000; // Random time between 10 and 30 seconds
-        setTimeout(() => {
-            startPortalEffect();
-            schedulePortalEffect();
-        }, randomTime);
+        let barsElapsed = 0;
+        const barInterval = (60 / 143) * 1000 * 4; // Calculate duration of one bar at 143 BPM
+
+        setInterval(() => {
+            barsElapsed++;
+            if (barsElapsed % 33 === 0) {
+                startPortalEffect();
+            }
+            if (barsElapsed % 72 === 0) {
+                audio.play();
+            }
+        }, barInterval);
     }
 
-    // Start the first portal effect schedule
+    audio.play(); // Play the audio at the start
     schedulePortalEffect();
+    startRain();
 
-    // Reset the page after a total duration of 45 seconds
     setTimeout(() => {
         location.reload();
-    }, 35000);
+    }, (60 / 143) * 1000 * 4 * 72); // Reload after 72 bars
 });
