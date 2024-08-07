@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let interval = 20;
   let increasing = true;
 
-  function createRainDropsContinuously() {
+  const rainInterval = setInterval(() => {
       createRainDrop();
 
       if (increasing) {
@@ -63,8 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       }
 
-      setTimeout(createRainDropsContinuously, interval);
-  }
-
-  createRainDropsContinuously();
+      clearInterval(rainInterval);
+      setInterval(() => createRainDrop(), interval);
+  }, interval);
 });
