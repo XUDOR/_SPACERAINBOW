@@ -1,5 +1,5 @@
 # _ANIMATIONS
--->> spaceRainbow V5E -- works 
+-->> spaceRainbow V6 - ship ship //more fx
 Repo of HTML / CSS / JAVASCRIPT assets
 V2: rainbow rain ainimation
 
