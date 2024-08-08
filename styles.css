@@ -14,7 +14,7 @@ body {
   background-image: url('images/SPACESHIP1.svg'); /* Path to your spaceship image */
   background-size: contain;
   background-repeat: no-repeat;
-  transition: transform 0.2s;
+  transition: transform 0.1s;
   z-index: 10;
 }
 
