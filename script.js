@@ -325,7 +325,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const offsetX = (spaceshipPosition.x - centerX) / centerX;
         const offsetY = (spaceshipPosition.y - centerY) / centerY;
 
-        spaceship.style.transform = `translate(${offsetX * 100}px, ${offsetY * 30}px)`;
-        rainContainer.style.transform = `translate(${-offsetX * 50}px, ${-offsetY * 15}px)`;
+        // Apply logarithmic scaling for smoother and faster transitions
+        const logX = Math.sign(offsetX) * Math.log1p(Math.abs(offsetX) * 100);
+        const logY = Math.sign(offsetY) * Math.log1p(Math.abs(offsetY) * 100);
+
+        spaceship.style.transform = `translate(${logX}px, ${logY}px)`;
+        rainContainer.style.transform = `translate(${-logX * 0.5}px, ${-logY * 0.5}px)`;
+
+        // Adjust speed of certain raindrops based on parallax effect
+        document.querySelectorAll('.rain').forEach(rainDrop => {
+            const speedFactor = 1 + Math.abs(offsetX) + Math.abs(offsetY);
+            rainDrop.style.animationDuration = `${Math.max(2, 5 / speedFactor)}s`;
+        });
     }
 });

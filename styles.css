@@ -52,7 +52,7 @@ footer {
   left: 0;
   width: 100%;
   background-color: gray;
-  display: flex;
+  display: none; /* Hide the footer */
   justify-content: space-between;
   padding: 10px;
 }
