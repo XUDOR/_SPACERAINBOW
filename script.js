@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle arrow keys for desktop
     document.addEventListener('keydown', (event) => {
-        const step = 30; // Increase step size for more significant movement
+        const step = 2; // Increase step size for more significant movement
         switch (event.key) {
             case 'ArrowLeft':
                 spaceshipPosition.x -= step;
@@ -325,18 +325,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const offsetX = (spaceshipPosition.x - centerX) / centerX;
         const offsetY = (spaceshipPosition.y - centerY) / centerY;
 
-        // Apply logarithmic scaling for smoother and faster transitions
-        const logX = Math.sign(offsetX) * Math.log1p(Math.abs(offsetX) * 100);
-        const logY = Math.sign(offsetY) * Math.log1p(Math.abs(offsetY) * 100);
+        // Apply linear scaling for faster transitions
+        const translateX = offsetX * window.innerWidth / 2;
+        const translateY = offsetY * window.innerHeight / 2;
 
-        spaceship.style.transform = `translate(${logX}px, ${logY}px)`;
-        rainContainer.style.transform = `translate(${-logX * 2}px, ${-logY * 0.5}px)`;
+        spaceship.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        rainContainer.style.transform = `translate(${-translateX * 1.5}px, ${-translateY * 0.5}px)`;
 
         // Adjust speed of certain raindrops based on parallax effect
         document.querySelectorAll('.rain').forEach(rainDrop => {
             const speedFactor = 1 + Math.abs(offsetX) + Math.abs(offsetY);
             rainDrop.style.animationDuration = `${Math.max(0.5, 5 / speedFactor)}s`;
-            rainDrop.style.transform = `translateY(${logY * -5}px)`;
         });
     }
 });
