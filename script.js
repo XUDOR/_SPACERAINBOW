@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rainDrop.classList.add('rain');
 
         const isSpecial = Math.random() < 0.01;
-        const sides = Math.floor(Math.random() * 7) + 3; // 3 to 9 sides
+        const isPlanet = Math.random() < 0.05; // 5% chance of being a planet
 
         rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
@@ -37,26 +37,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSpecial) {
             size *= 0.3;
         }
+        if (isPlanet) {
+            size *= 2; // Make planets larger
+            rainDrop.classList.add('planet');
+        }
         rainDrop.style.width = `${size}px`;
         rainDrop.style.height = `${size}px`;
 
-        if (Math.random() > 0.5) {
-            const borderRadius = Array.from({ length: 4 }, () => `${Math.random() * 50}%`).join(' ');
-            rainDrop.style.borderRadius = borderRadius;
+        if (isPlanet || Math.random() > 0.5) {
+            rainDrop.style.borderRadius = '50%'; // Circular for planets and 50% of other drops
         } else {
+            const sides = Math.floor(Math.random() * 7) + 3; // 3 to 9 sides
             rainDrop.style.clipPath = `polygon(${Array.from({ length: sides }, () => `${Math.random() * 100}% ${Math.random() * 100}%`).join(', ')})`;
         }
 
         rainDrop.style.left = `${Math.random() * 100}%`;
-        let duration = Math.random() * 3 + 2; // Changed from (4 + 1) to (3 + 2) for slightly faster fall
+        let duration = Math.random() * 3 + 2;
         if (isSpecial) {
-            duration *= 10; // Changed from 15 to 10 for faster special drops
+            duration *= 10;
         }
 
         const rotationClass = `rotate-speed-${Math.floor(Math.random() * 4) + 1}`;
         rainDrop.classList.add(rotationClass);
 
-        // Update animation styles
         rainDrop.style.animation = isSpecial
             ? `fall ${duration}s linear, scaleUp ${duration}s ease-in-out, ${rotationClass} ${duration}s linear`
             : `fall ${duration}s linear, ${rotationClass} ${duration}s linear`;
@@ -65,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rainContainer.appendChild(rainDrop);
 
-        // Debugging output
         console.log('Raindrop styles:', rainDrop.style.cssText);
         console.log('Raindrop parent:', rainDrop.parentElement);
         console.log('Raindrop position:', rainDrop.getBoundingClientRect());
@@ -80,22 +82,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startRain() {
         logMessage('Starting rain');
-        rainInterval = setInterval(createRainDrop, 50); // Changed from 100 to 50 ms for denser rain
+        rainInterval = setInterval(createRainDrop, 50);
     }
 
     function thinOutRaindrops() {
         thinOutInterval = setInterval(() => {
             logMessage('Thinning out raindrops');
             clearInterval(rainInterval);
-            rainInterval = setInterval(createRainDrop, 100); // Changed from 500 to 100 ms for denser rain even after thinning
-        }, 10000); // Changed from 5000 to 10000 ms to maintain density for longer
+            rainInterval = setInterval(createRainDrop, 100);
+        }, 10000);
     }
 
     function cleanupRaindrops() {
         logMessage('Cleaning up raindrops');
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(rainDrop => {
-            if (rainDrop.getBoundingClientRect().top > window.innerHeight + 100) { // Added 100px buffer
+            if (rainDrop.getBoundingClientRect().top > window.innerHeight + 100) {
                 rainDrop.remove();
                 logMessage('Raindrop cleaned up');
             }
@@ -143,9 +145,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function schedulePortalEffect() {
         logMessage('Scheduling portal effect');
-        setTimeout(startPortalEffect, 10000); // First portal effect after 10 seconds
-        setTimeout(startPortalEffect, 20000); // Second portal effect after 20 seconds
-        setTimeout(startPortalEffect, 30000); // Third portal effect after 30 seconds
+        setTimeout(startPortalEffect, 10000);
+        setTimeout(startPortalEffect, 20000);
+        setTimeout(startPortalEffect, 30000);
+        setTimeout(startPortalEffect, 40000);
+        setTimeout(startPortalEffect, 50000);
+    }
+
+    function createEndTriangle() {
+        const endTriangle = document.createElement('div');
+        endTriangle.id = 'end-triangle';
+        document.body.appendChild(endTriangle);
+
+        endTriangle.addEventListener('animationend', () => {
+            endTriangle.remove();
+        });
     }
 
     function startAnimation() {
@@ -168,6 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         logMessage('Animation stopped');
     }
 
+// console download ======================================
+
     function downloadLog() {
         const logBlob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
         const logUrl = URL.createObjectURL(logBlob);
@@ -178,6 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
         link.click();
         document.body.removeChild(link);
     }
+
+// dom element download ======================================
 
     function downloadDomElements() {
         const domElements = Array.from(rainContainer.children).map(child => {
@@ -199,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(link);
     }
 
-    // Start the animation when the start triangle is clicked
     startTriangle.addEventListener('click', () => {
         startTriangle.style.display = 'none';
         startAnimation();
@@ -208,4 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
     stopButton.addEventListener('click', stopAnimation);
     downloadLogButton.addEventListener('click', downloadLog);
     downloadDomButton.addEventListener('click', downloadDomElements);
+
+    audio.addEventListener('ended', () => {
+        createEndTriangle();
+        audio.currentTime = 0;
+        audio.play();
+    });
 });
