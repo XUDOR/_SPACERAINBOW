@@ -12,15 +12,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const stopButton = document.getElementById('stop-button');
     const downloadLogButton = document.getElementById('download-log');
     const downloadDomButton = document.getElementById('download-dom');
+    const spaceship = document.getElementById('spaceship');
     let portalCount = 0;
     let rainInterval;
     let thinOutInterval;
     let cleanupInterval;
     let log = [];
+    let spaceshipPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
-    function logMessage(message) {
-        log.push({ timestamp: Date.now(), message });
-        console.log(message);
+    const BPM = 143;
+    const MILLISECONDS_PER_MINUTE = 60000;
+    const BEATS_PER_BAR = 4;
+
+    const barDuration = (MILLISECONDS_PER_MINUTE / BPM) * BEATS_PER_BAR;
+    const eighthNoteDuration = barDuration / 8;
+    const sixteenthNoteDuration = barDuration / 16;
+
+    function logMessage(message, element = null) {
+        const logEntry = {
+            timestamp: Date.now(),
+            message,
+            element: element ? element.outerHTML : null
+        };
+        log.push(logEntry);
+        console.log(message, element);
     }
 
     function createRainDrop() {
@@ -29,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rainDrop.classList.add('rain');
 
         const isSpecial = Math.random() < 0.01;
-        const isPlanet = Math.random() < 0.05; // 5% chance of being a planet
+        const isPlanet = Math.random() < 0.05;
 
         rainDrop.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
@@ -38,16 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
             size *= 0.3;
         }
         if (isPlanet) {
-            size *= 2; // Make planets larger
+            size *= 2;
             rainDrop.classList.add('planet');
         }
         rainDrop.style.width = `${size}px`;
         rainDrop.style.height = `${size}px`;
 
         if (isPlanet || Math.random() > 0.5) {
-            rainDrop.style.borderRadius = '50%'; // Circular for planets and 50% of other drops
+            rainDrop.style.borderRadius = '50%';
         } else {
-            const sides = Math.floor(Math.random() * 7) + 3; // 3 to 9 sides
+            const sides = Math.floor(Math.random() * 7) + 3;
             rainDrop.style.clipPath = `polygon(${Array.from({ length: sides }, () => `${Math.random() * 100}% ${Math.random() * 100}%`).join(', ')})`;
         }
 
@@ -68,16 +83,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rainContainer.appendChild(rainDrop);
 
-        console.log('Raindrop styles:', rainDrop.style.cssText);
-        console.log('Raindrop parent:', rainDrop.parentElement);
-        console.log('Raindrop position:', rainDrop.getBoundingClientRect());
-
+        logMessage('Raindrop created', rainDrop);
         rainDrop.addEventListener('animationend', () => {
-            logMessage('Removing raindrop');
+            logMessage('Removing raindrop', rainDrop);
             rainDrop.remove();
         });
 
-        logMessage(`Raindrop appended to the DOM: ${rainDrop.outerHTML}`);
+        logMessage('Raindrop appended to the DOM', rainDrop);
+    }
+
+    function createSpecialRainDrop() {
+        const rainDrop = document.createElement('div');
+        rainDrop.classList.add('rain', 'special');
+        rainDrop.style.width = '20px';
+        rainDrop.style.height = '20px';
+        rainDrop.style.backgroundColor = 'gold';
+        rainDrop.style.borderRadius = '50%';
+        rainDrop.style.left = `${Math.random() * 100}%`;
+        rainDrop.style.animation = `fall ${Math.random() * 3 + 4}s linear, rotate-speed-1 ${Math.random() * 10 + 10}s linear infinite`;
+        rainContainer.appendChild(rainDrop);
+    }
+
+    function createBurstOfRaindrops() {
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createRainDrop, i * 50);
+        }
     }
 
     function startRain() {
@@ -97,9 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
         logMessage('Cleaning up raindrops');
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(rainDrop => {
-            if (rainDrop.getBoundingClientRect().top > window.innerHeight + 100) {
+            const rect = rainDrop.getBoundingClientRect();
+            if (rect.top > window.innerHeight + 100 || rect.bottom < -100 || rect.left > window.innerWidth + 100 || rect.right < -100) {
                 rainDrop.remove();
-                logMessage('Raindrop cleaned up');
+                logMessage('Raindrop cleaned up', rainDrop);
             }
         });
     }
@@ -136,11 +167,23 @@ document.addEventListener('DOMContentLoaded', () => {
         logMessage('Starting portal effect');
         let portalInterval = setInterval(flashBackgroundColor, 20);
         let colorScreenInterval = setInterval(flashColorScreen, Math.random() * (1000 - 500) + 500);
+
+        const portalDuration = 3000;
+        const colorFlashes = setInterval(() => {
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = color;
+            setTimeout(() => {
+                document.body.style.backgroundColor = 'black';
+            }, 100);
+        }, 100);
+
         setTimeout(() => {
             clearInterval(portalInterval);
             clearInterval(colorScreenInterval);
+            clearInterval(colorFlashes);
             portalCount++;
-        }, 3000);
+            document.body.style.backgroundColor = 'black';
+        }, portalDuration);
     }
 
     function schedulePortalEffect() {
@@ -150,6 +193,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(startPortalEffect, 30000);
         setTimeout(startPortalEffect, 40000);
         setTimeout(startPortalEffect, 50000);
+    }
+
+    function scheduleRainEvents() {
+        setInterval(() => {
+            createSpecialRainDrop();
+            createBurstOfRaindrops();
+        }, barDuration * 4);
+
+        setInterval(createRainDrop, eighthNoteDuration);
+
+        setInterval(createBurstOfRaindrops, barDuration);
+
+        setInterval(createSpecialRainDrop, sixteenthNoteDuration * 4);
     }
 
     function createEndTriangle() {
@@ -168,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         thinOutRaindrops();
         cleanupInterval = setInterval(cleanupRaindrops, 3000);
         schedulePortalEffect();
+        scheduleRainEvents();
     }
 
     function stopAnimation() {
@@ -182,8 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         logMessage('Animation stopped');
     }
 
-// console download ======================================
-
     function downloadLog() {
         const logBlob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
         const logUrl = URL.createObjectURL(logBlob);
@@ -194,8 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
         link.click();
         document.body.removeChild(link);
     }
-
-// dom element download ======================================
 
     function downloadDomElements() {
         const domElements = Array.from(rainContainer.children).map(child => {
@@ -231,4 +284,48 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.currentTime = 0;
         audio.play();
     });
+
+    // Handle arrow keys for desktop
+    document.addEventListener('keydown', (event) => {
+        const step = 10;
+        switch (event.key) {
+            case 'ArrowLeft':
+                spaceshipPosition.x -= step;
+                break;
+            case 'ArrowRight':
+                spaceshipPosition.x += step;
+                break;
+            case 'ArrowUp':
+                spaceshipPosition.y -= step;
+                break;
+            case 'ArrowDown':
+                spaceshipPosition.y += step;
+                break;
+        }
+        moveSpaceship();
+    });
+
+    // Handle touch movement for mobile
+    document.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        spaceshipPosition.x = touch.clientX;
+        spaceshipPosition.y = touch.clientY;
+        moveSpaceship();
+    });
+
+    // Function to move the spaceship and apply parallax effect
+    function moveSpaceship() {
+        const maxX = window.innerWidth - 50;
+        const maxY = window.innerHeight - 50;
+        spaceshipPosition.x = Math.max(0, Math.min(spaceshipPosition.x, maxX));
+        spaceshipPosition.y = Math.max(0, Math.min(spaceshipPosition.y, maxY));
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const offsetX = (spaceshipPosition.x - centerX) / centerX;
+        const offsetY = (spaceshipPosition.y - centerY) / centerY;
+
+        spaceship.style.transform = `translate(${offsetX * 100}px, ${offsetY * 30}px)`;
+        rainContainer.style.transform = `translate(${-offsetX * 50}px, ${-offsetY * 15}px)`;
+    }
 });

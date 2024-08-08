@@ -5,6 +5,19 @@ body {
   overflow: hidden;
 }
 
+.spaceship {
+  position: absolute;
+  bottom: 30%; /* Increased vertical position */
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background-image: url('images/SPACESHIP1.svg'); /* Path to your spaceship image */
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
 .rain-container {
   position: absolute;
   width: 100%;
@@ -108,7 +121,6 @@ footer {
   animation: rotate-speed-4 80s linear infinite;
 }
 
-
 #end-triangle {
   width: 0;
   height: 0;
@@ -120,7 +132,7 @@ footer {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 30;
-  animation: growTriangle 3s ease-in-out forwards;
+  animation: growTriangle 5s ease-in-out forwards;
 }
 
 @keyframes growTriangle {
@@ -134,9 +146,9 @@ footer {
       opacity: 1;
   }
   100% {
-      border-left-width: 50px;
-      border-right-width: 50px;
-      border-bottom-width: 86.6px;
-      opacity: 0;
+      border-left-width: 200px;
+      border-right-width: 200px;
+      border-bottom-width: 346.4px;
+      opacity: 1;
   }
 }
