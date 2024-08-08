@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logY = Math.sign(offsetY) * Math.log1p(Math.abs(offsetY) * 100);
 
         spaceship.style.transform = `translate(${logX}px, ${logY}px)`;
-        rainContainer.style.transform = `translate(${-logX * 0.8}px, ${-logY * 0.8}px)`;
+        rainContainer.style.transform = `translate(${-logX * 2}px, ${-logY * 0.5}px)`;
 
         // Adjust speed of certain raindrops based on parallax effect
         document.querySelectorAll('.rain').forEach(rainDrop => {
