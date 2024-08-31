@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadLogButton = document.getElementById('download-log');
     const downloadDomButton = document.getElementById('download-dom');
     const spaceship = document.getElementById('spaceship');
-    const exitButton = document.createElement('button'); // New Exit button
+    const exitButton = document.createElement('button');
     exitButton.id = 'exit-button';
     exitButton.textContent = 'X';
     document.body.appendChild(exitButton);
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     exitButton.style.top = '10px';
     exitButton.style.right = '10px';
     exitButton.style.zIndex = '100';
-    
+
     let portalCount = 0;
     let rainInterval;
     let thinOutInterval;
@@ -301,11 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animateBackgrounds() {
-        // Add multiple background images and animate them
         const bgImages = [
             'images/background1.png',
             'images/background2.png',
-            'images/background5.png' // add more backgrounds if needed
+            'images/background5.png' // Add more backgrounds if needed
         ];
 
         bgImages.forEach((image, index) => {
@@ -313,8 +312,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bg.classList.add('animated-background');
             bg.style.backgroundImage = `url(${image})`;
             bg.style.position = 'fixed';
-            bg.style.width = '100%';
-            bg.style.height = '100%';
+            bg.style.width = '120%'; // Start zoomed in
+            bg.style.height = '120%'; // Start zoomed in
             bg.style.top = 0;
             bg.style.left = 0;
             bg.style.zIndex = '-1';
@@ -322,17 +321,25 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(bg);
             backgrounds.push(bg);
 
-            // Animate the background
-            const direction = index % 2 === 0 ? 1 : -1; // Alternate directions
-            const scaleFactor = 1 + Math.random() * 0.5; // Random scale factor
-
-            let posX = 0;
-            let posY = 0;
+            // Animate the background with scaling and color changes
+            let scaleDirection = index % 2 === 0 ? 0.001 : -0.001; // Alternate scaling direction
+            let scale = 1.2; // Start zoomed in
 
             const interval = setInterval(() => {
-                posX += direction * 0.5;
-                posY += direction * 0.3;
-                bg.style.transform = `translate(${posX}px, ${posY}px) scale(${scaleFactor})`;
+                scale += scaleDirection;
+                if (scale > 1.5 || scale < 0.8) scaleDirection *= -1; // Reverse direction
+
+                // Calculate movement based on spaceship position
+                const offsetX = (spaceshipPosition.x - window.innerWidth / 2) / window.innerWidth;
+                const offsetY = (spaceshipPosition.y - window.innerHeight / 2) / window.innerHeight;
+                
+                // Apply parallax effect and dynamic changes
+                bg.style.transform = `translate(${offsetX * 20 * (index % 2 === 0 ? 1 : -1)}px, ${offsetY * 20 * (index % 2 === 0 ? 1 : -1)}px) scale(${scale})`;
+                bg.style.opacity = 0.5 + 0.5 * Math.sin(Date.now() / 1000 + index); // Dynamic opacity change
+
+                const colorIndex = Math.floor((spaceshipPosition.x / window.innerWidth) * colors.length);
+                bg.style.backgroundColor = colors[colorIndex]; // Change color based on spaceship position
+
             }, 50);
 
             backgroundIntervals.push(interval);
@@ -418,6 +425,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.rain').forEach(rainDrop => {
             const speedFactor = 1 + Math.abs(offsetX) + Math.abs(offsetY);
             rainDrop.style.animationDuration = `${Math.max(0.5, 5 / speedFactor)}s`;
+        });
+
+        // Update backgrounds based on spaceship movement for parallax effect
+        backgrounds.forEach((bg, index) => {
+            const direction = index % 2 === 0 ? 1 : -1;
+            bg.style.transform = `translate(${offsetX * 20 * direction}px, ${offsetY * 20 * direction}px) scale(${bg.style.transform.match(/scale\(([^)]+)\)/)[1]})`;
         });
     }
 });
