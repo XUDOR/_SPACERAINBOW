@@ -84,12 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
         rainContainer.appendChild(rainDrop);
 
         logMessage('Raindrop created', rainDrop);
-        rainDrop.addEventListener('animationend', () => {
-            logMessage('Removing raindrop', rainDrop);
-            rainDrop.remove();
-        });
+        rainDrop.addEventListener('animationend', handleAnimationEnd);
 
         logMessage('Raindrop appended to the DOM', rainDrop);
+    }
+
+    function handleAnimationEnd(event) {
+        logMessage('Removing raindrop', event.target);
+        event.target.remove();
     }
 
     function createSpecialRainDrop() {
@@ -110,16 +112,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function adjustRainInterval(newInterval) {
+        clearInterval(rainInterval);
+        rainInterval = setInterval(createRainDrop, newInterval);
+    }
+
     function startRain() {
         logMessage('Starting rain');
-        rainInterval = setInterval(createRainDrop, 50);
+        adjustRainInterval(100); // Start with a less dense interval
     }
 
     function thinOutRaindrops() {
         thinOutInterval = setInterval(() => {
             logMessage('Thinning out raindrops');
-            clearInterval(rainInterval);
-            rainInterval = setInterval(createRainDrop, 100);
+            adjustRainInterval(200); // Increase interval to reduce density
         }, 10000);
     }
 
@@ -129,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         raindrops.forEach(rainDrop => {
             const rect = rainDrop.getBoundingClientRect();
             if (rect.top > window.innerHeight + 100 || rect.bottom < -100 || rect.left > window.innerWidth + 100 || rect.right < -100) {
+                rainDrop.removeEventListener('animationend', handleAnimationEnd);
                 rainDrop.remove();
                 logMessage('Raindrop cleaned up', rainDrop);
             }
@@ -234,7 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(thinOutInterval);
         clearInterval(cleanupInterval);
         const raindrops = document.querySelectorAll('.rain');
-        raindrops.forEach(raindrop => raindrop.remove());
+        raindrops.forEach(raindrop => {
+            raindrop.removeEventListener('animationend', handleAnimationEnd);
+            raindrop.remove();
+        });
         document.body.style.backgroundColor = '';
         logMessage('Animation stopped');
     }
@@ -287,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle arrow keys for desktop
     document.addEventListener('keydown', (event) => {
-        const step = 2; // Increase step size for more significant movement
+        const step = 10; // Increase step size for more significant movement
         switch (event.key) {
             case 'ArrowLeft':
                 spaceshipPosition.x -= step;
@@ -302,6 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 spaceshipPosition.y += step;
                 break;
         }
+        moveSpaceship();
+    });
+
+    // Smooth mouse movement for desktop
+    document.addEventListener('mousemove', (event) => {
+        spaceshipPosition.x += (event.clientX - spaceshipPosition.x) * 0.1;
+        spaceshipPosition.y += (event.clientY - spaceshipPosition.y) * 0.1;
         moveSpaceship();
     });
 
