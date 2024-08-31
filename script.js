@@ -13,12 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadLogButton = document.getElementById('download-log');
     const downloadDomButton = document.getElementById('download-dom');
     const spaceship = document.getElementById('spaceship');
+    const exitButton = document.createElement('button'); // New Exit button
+    exitButton.id = 'exit-button';
+    exitButton.textContent = 'X';
+    document.body.appendChild(exitButton);
+    exitButton.style.position = 'fixed';
+    exitButton.style.top = '10px';
+    exitButton.style.right = '10px';
+    exitButton.style.zIndex = '100';
+    
     let portalCount = 0;
     let rainInterval;
     let thinOutInterval;
     let cleanupInterval;
     let log = [];
     let spaceshipPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    let backgrounds = [];
+    let backgroundIntervals = [];
 
     const BPM = 143;
     const MILLISECONDS_PER_MINUTE = 60000;
@@ -232,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanupInterval = setInterval(cleanupRaindrops, 3000);
         schedulePortalEffect();
         scheduleRainEvents();
+        animateBackgrounds();
     }
 
     function stopAnimation() {
@@ -240,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(rainInterval);
         clearInterval(thinOutInterval);
         clearInterval(cleanupInterval);
+        clearBackgroundIntervals();
         const raindrops = document.querySelectorAll('.rain');
         raindrops.forEach(raindrop => {
             raindrop.removeEventListener('animationend', handleAnimationEnd);
@@ -247,6 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         document.body.style.backgroundColor = '';
         logMessage('Animation stopped');
+    }
+
+    function clearAllElements() {
+        stopAnimation();
+        document.body.innerHTML = ''; // Clear all elements from the body
+        log = []; // Clear logs
+        logMessage('All elements cleared');
     }
 
     function downloadLog() {
@@ -280,6 +300,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(link);
     }
 
+    function animateBackgrounds() {
+        // Add multiple background images and animate them
+        const bgImages = [
+            'images/background1.png',
+            'images/background2.png',
+            'images/background5.png' // add more backgrounds if needed
+        ];
+
+        bgImages.forEach((image, index) => {
+            const bg = document.createElement('div');
+            bg.classList.add('animated-background');
+            bg.style.backgroundImage = `url(${image})`;
+            bg.style.position = 'fixed';
+            bg.style.width = '100%';
+            bg.style.height = '100%';
+            bg.style.top = 0;
+            bg.style.left = 0;
+            bg.style.zIndex = '-1';
+            bg.style.opacity = 0.7;
+            document.body.appendChild(bg);
+            backgrounds.push(bg);
+
+            // Animate the background
+            const direction = index % 2 === 0 ? 1 : -1; // Alternate directions
+            const scaleFactor = 1 + Math.random() * 0.5; // Random scale factor
+
+            let posX = 0;
+            let posY = 0;
+
+            const interval = setInterval(() => {
+                posX += direction * 0.5;
+                posY += direction * 0.3;
+                bg.style.transform = `translate(${posX}px, ${posY}px) scale(${scaleFactor})`;
+            }, 50);
+
+            backgroundIntervals.push(interval);
+        });
+    }
+
+    function clearBackgroundIntervals() {
+        backgroundIntervals.forEach(interval => clearInterval(interval));
+        backgroundIntervals = [];
+    }
+
     startTriangle.addEventListener('click', () => {
         startTriangle.style.display = 'none';
         startAnimation();
@@ -289,13 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadLogButton.addEventListener('click', downloadLog);
     downloadDomButton.addEventListener('click', downloadDomElements);
 
-    audio.addEventListener('ended', () => {
-        createEndTriangle();
-        audio.currentTime = 0;
-        audio.play();
-    });
+    exitButton.addEventListener('click', clearAllElements); // Add exit button functionality
 
-    // Handle arrow keys for desktop
     document.addEventListener('keydown', (event) => {
         const step = 10; // Increase step size for more significant movement
         switch (event.key) {
@@ -310,6 +369,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ArrowDown':
                 spaceshipPosition.y += step;
+                break;
+            case 'z':
+                startAnimation(); // Restart animation with 'z'
+                break;
+            case 'x':
+                clearAllElements(); // Stop and clear everything with 'x'
                 break;
         }
         moveSpaceship();
