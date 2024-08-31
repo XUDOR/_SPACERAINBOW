@@ -1,4 +1,5 @@
 body {
+  background-color: black;
   background-image: url('images/background.png'); /* Add a seamless repeating background image */
   background-repeat: repeat-x; /* Horizontally repeat the background */
   overflow: hidden;
