@@ -1,22 +1,23 @@
 body {
-  background-color: black;
-  margin: 0;
-  padding: 0;
+  background-image: url('images/background.png'); /* Add a seamless repeating background image */
+  background-repeat: repeat-x; /* Horizontally repeat the background */
   overflow: hidden;
 }
 
+/* styles.css */
 .spaceship {
   position: absolute;
-  bottom: 30%; /* Increased vertical position */
+  bottom: 40%; /* Adjusted to move further up the screen */
   left: 50%;
   width: 50px;
   height: 50px;
-  background-image: url('images/SPACESHIP1.svg'); /* Path to your spaceship image */
+  background-image: url('images/SPACESHIP1.svg');
   background-size: contain;
   background-repeat: no-repeat;
   transition: transform 0.5s;
   z-index: 10;
 }
+
 
 .rain-container {
   position: absolute;
