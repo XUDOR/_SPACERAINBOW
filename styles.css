@@ -1,0 +1,156 @@
+body {
+  background-color: black;
+  background-image: url('images/background.png'); /* Add a seamless repeating background image */
+  background-repeat: repeat-x; /* Horizontally repeat the background */
+  overflow: hidden;
+}
+
+/* styles.css */
+.spaceship {
+  position: absolute;
+  bottom: 40%; /* Adjusted to move further up the screen */
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background-image: url('images/SPACESHIP1.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.5s;
+  z-index: 10;
+}
+
+
+.rain-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.rain {
+  position: absolute;
+  top: -100px;
+  opacity: 0.9;
+  animation: fall linear infinite;
+}
+
+.start-triangle {
+  width: 0;
+  height: 0;
+  border-left: 25vw solid transparent;
+  border-right: 25vw solid transparent;
+  border-bottom: 50vh solid white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 20;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: gray;
+  display: none; /* Hide the footer */
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#stop-button {
+  background-color: aqua;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+#download-log {
+  background-color: purple;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+@keyframes fall {
+  0% {
+    transform: scale(0.01);
+    top: -10%;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5) rotate(0deg);
+    top: 110%;
+    opacity: 0.5;
+  }
+}
+
+@keyframes rotate-speed-1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-2 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-3 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotate-speed-4 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rotate-speed-1 {
+  animation: rotate-speed-1 20s linear infinite;
+}
+
+.rotate-speed-2 {
+  animation: rotate-speed-2 40s linear infinite;
+}
+
+.rotate-speed-3 {
+  animation: rotate-speed-3 60s linear infinite;
+}
+
+.rotate-speed-4 {
+  animation: rotate-speed-4 80s linear infinite;
+}
+
+#end-triangle {
+  width: 0;
+  height: 0;
+  border-left: 0px solid transparent;
+  border-right: 0px solid transparent;
+  border-bottom: 0px solid white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  animation: growTriangle 5s ease-in-out forwards;
+}
+
+@keyframes growTriangle {
+  0% {
+      border-left-width: 0px;
+      border-right-width: 0px;
+      border-bottom-width: 0px;
+      opacity: 0;
+  }
+  20% {
+      opacity: 1;
+  }
+  100% {
+      border-left-width: 200px;
+      border-right-width: 200px;
+      border-bottom-width: 346.4px;
+      opacity: 1;
+  }
+}
